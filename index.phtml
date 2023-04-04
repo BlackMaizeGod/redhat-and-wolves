@@ -585,6 +585,17 @@ function getFreeCell(array $occupiedPlaces, int $topLimit): int
 }
 
 /**
+ * Checking if the cell is the last in the row
+ * @param int $cellPosition
+ * @param int $playgroundWidth
+ * @return bool
+ */
+function isLastCellInRow(int $cellPosition, int $playgroundWidth): bool
+{
+    return $cellPosition !== 0 && $cellPosition % $playgroundWidth === 0;
+}
+
+/**
  * Searching qty of wolves one cell around
  * @param array $wolfsPositions
  * @param int $currentPosition
@@ -595,14 +606,20 @@ function lookForWolfs(array $wolfsPositions, int $currentPosition, int $playgrou
 {
     $coordinates = [
             'north' => $currentPosition - $playgroundWidth,
-            'northeast' => $currentPosition - $playgroundWidth + 1,
-            'east' => $currentPosition + 1,
-            'southeast' => $currentPosition + $playgroundWidth + 1,
             'south' => $currentPosition + $playgroundWidth,
-            'southwest' => $currentPosition + $playgroundWidth - 1,
-            'west' => $currentPosition - 1,
-            'northwest' => $currentPosition - $playgroundWidth - 1
     ];
+
+    if (!isLastCellInRow($currentPosition + 1, $playgroundWidth)) {
+        $coordinates['northeast'] = $currentPosition - $playgroundWidth + 1;
+        $coordinates['east'] = $currentPosition + 1;
+        $coordinates['southeast'] = $currentPosition + $playgroundWidth + 1;
+    }
+
+    if (!isLastCellInRow($currentPosition, $playgroundWidth)) {
+        $coordinates['southwest'] = $currentPosition + $playgroundWidth - 1;
+        $coordinates['west'] = $currentPosition - 1;
+        $coordinates['northwest'] = $currentPosition - $playgroundWidth - 1;
+    }
 
     return count(array_intersect($wolfsPositions, array_values($coordinates)));
 }
